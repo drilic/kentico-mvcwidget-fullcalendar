@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>EXLRT.Kentico.Mvc.Widgets.FullCalendar</id>
+    <version>1.0.0</version>
+    <authors>Dragoljub Ilic (EXLRT)</authors>
+    <owners>Dragoljub Ilic (EXLRT)</owners>
+    <projectUrl>https://github.com/drilic/kentico-mvcwidget-fullcalendar</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Full calendar allows you to render various content as calendar events.</description>
+    <releaseNotes>Initial release</releaseNotes>
+    <copyright>Copyright 2019</copyright>
+    <tags>Kentico MVC widget calendar fullcalendar</tags>
+    <dependencies>
+      <dependency id="Kentico.Libraries" version="12.0.41" />
+	  <dependency id="Kentico.AspNet.Mvc" version="12.0.41" />
+    </dependencies>
+  </metadata>
+  <files>
+	<file src="bin\Release\EXLRT.Kentico.Mvc.Widgets.FullCalendar.dll" target="lib\net461\EXLRT.Kentico.Mvc.Widgets.FullCalendar.dll" />
+
+	<!-- views -->
+	<file src="Views\Shared\Widgets\FullCalendarWidget\_FullCalendarWidget.cshtml" target="content\Views\Shared\Widgets\FullCalendarWidget\_FullCalendarWidget.cshtml" />
+	<file src="Views\Shared\FormComponents\FullCalendarTypeSelector\_FormComponents.FullCalendarTypeSelector.cshtml" target="content\Views\Shared\FormComponents\FullCalendarTypeSelector\_FormComponents.FullCalendarTypeSelector.cshtml" />
+	
+	<!-- CSS -->
+	<file src="Content\Widgets\FullCalendar\css\fullCalendar.css" target="content\Content\Widgets\FullCalendar\css\fullCalendar.css" />
+	<file src="Content\Widgets\FullCalendar\js\fullCalendar.js" target="content\Content\Widgets\FullCalendar\js\fullCalendar.js" />
+  </files>
+</package>
+
+

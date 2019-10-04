@@ -1,0 +1,8 @@
+﻿@using Kentico.Forms.Web.Mvc
+@model EXLRT.Kentico.Mvc.Widgets.FullCalendar.Models.FormComponents.FullCalendarTypeSelector.FullCalendarTypeSelectorComponent
+
+@{
+    IDictionary<string, object> htmlAttributes = ViewData.GetEditorHtmlAttributes();
+}
+
+@Html.DropDownListFor(x => x.SelectedValue, Model.Items, null, htmlAttributes)
