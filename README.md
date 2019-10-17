@@ -29,8 +29,6 @@ Full calendar allows you to render various content as calendar events.
 	* Calendars can be configured per site, but name must be unique globally
 7. [Register necessary styles and scripts for full calendar in layout](#register-layout-scripts)
 
-For more information check the blog on this [link](https://exlrt.com).
-
 ### Configure routing
 
 Method definition:
@@ -98,3 +96,6 @@ Example of configuration for DancingGoat site (_Layout.cshtml):
 </body>
 
 ```
+
+## Contributions and Support
+Feel free to fork and submit pull requests or report issues to contribute. Either this way or another one, we will look into them as soon as possible. 
