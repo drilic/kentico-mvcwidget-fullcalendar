@@ -5,18 +5,17 @@ using Kentico.Forms.Web.Mvc;
 namespace EXLRT.Kentico.Mvc.Widgets.FullCalendar.Models.FormComponents.FullCalendarTypeSelector
 {
     using CMS.SiteProvider;
+    using global::Kentico.Web.Mvc;
     using Kentico.Mvc.Widgets.FullCalendar;
     using Kentico.Mvc.Widgets.FullCalendar.Models.Widgets.FullCalendarWidget;
     using System;
     using System.Collections.Generic;
-    using System.Web.Mvc;
 
     public class FullCalendarTypeSelectorComponent : SelectorFormComponent<DropDownProperties>
     {
-
         public const string IDENTIFIER = "EXLRT.FormComponents.FullCalendarTypeSelector";
 
-        protected override IEnumerable<SelectListItem> GetItems()
+        protected override IEnumerable<HtmlOptionItem> GetHtmlOptions()
         {
             Dictionary<string, FullCalendarWidgetConfiguration> widgetConfigurations = FullCalendarConfiguration.GetWidgetConfigurations();
             if (widgetConfigurations == null || widgetConfigurations.Count == 0)
@@ -26,7 +25,7 @@ namespace EXLRT.Kentico.Mvc.Widgets.FullCalendar.Models.FormComponents.FullCalen
 
             if (!string.IsNullOrEmpty(Properties.OptionLabel))
             {
-                yield return new SelectListItem()
+                yield return new HtmlOptionItem()
                 {
                     Value = String.Empty,
                     Text = Properties.OptionLabel
@@ -39,7 +38,7 @@ namespace EXLRT.Kentico.Mvc.Widgets.FullCalendar.Models.FormComponents.FullCalen
 
                 if (String.IsNullOrEmpty(currentConfig.SiteCodeName) || currentConfig.SiteCodeName.Equals(SiteContext.CurrentSiteName))
                 {
-                    yield return new SelectListItem()
+                    yield return new HtmlOptionItem()
                     {
                         Value = widgetConfiguration.Key,
                         Text = widgetConfiguration.Value.WidgetTypeDisplayName
