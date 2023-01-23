@@ -2,7 +2,7 @@
 @model EXLRT.Kentico.Mvc.Widgets.FullCalendar.Models.FormComponents.FullCalendarTypeSelector.FullCalendarTypeSelectorComponent
 
 @{
-    IDictionary<string, object> htmlAttributes = ViewData.GetEditorHtmlAttributes();
+    var htmlAttributes = ViewData.Kentico().GetEditorHtmlAttributes();
 }
 
-@Html.DropDownListFor(x => x.SelectedValue, Model.Items, null, htmlAttributes)
+@Html.DropDownListFor(x => x.SelectedValue, Model.HtmlOptions.ToSelectListItems(), null, htmlAttributes)
