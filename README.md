@@ -77,8 +77,8 @@ FullCalendarConfiguration.InitializeFullCalendarForMultiCultureSites()
                     .AddConfiguration("articles", FullCalendarConfigurationType.Pages, "DancingGoatMvc.Article",
                                       "Articles (Pages)", "DocumentName", "DocumentPublishFrom", "DocumentPublishTo", new UrlConfiguration()
                                       {
-                                          Pattern = "#NodeAliasPath#",
-                                          Columns = new string[] { "NodeAliasPath" }
+                                          Pattern = "/#DocumentCulture#/Articles/#NodeGUID#/#NodeAlias#",
+                                          Columns = new string[] { "DocumentCulture", "NodeAlias", "NodeGUID" }
                                       })
 									  
                     // Objects bellow does not exist in DancingGoat sample. They must be created in Kentico CMS before using
