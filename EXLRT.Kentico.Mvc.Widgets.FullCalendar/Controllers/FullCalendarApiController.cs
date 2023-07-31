@@ -1,6 +1,5 @@
 ﻿namespace EXLRT.Kentico.Mvc.Widgets.FullCalendar.Controllers
 {
-    using global::Kentico.Content.Web.Mvc;
     using Kentico.Mvc.Widgets.FullCalendar;
     using Kentico.Mvc.Widgets.FullCalendar.Models.FullCalendar;
     using Kentico.Mvc.Widgets.FullCalendar.Models.Widgets.FullCalendarWidget;
@@ -14,12 +13,10 @@
     public class FullCalendarApiController : Controller
     {
         public IFullCalendarEventsRepository FullCalendarEventsRepository { get; }
-        private readonly IPageUrlRetriever pageUrlRetriever;
 
-        public FullCalendarApiController(IPageUrlRetriever pageUrlRetriever, IFullCalendarEventsRepository fullCalendarEventsRepository)
+        public FullCalendarApiController(IFullCalendarEventsRepository fullCalendarEventsRepository)
         {
             this.FullCalendarEventsRepository = fullCalendarEventsRepository;
-            this.pageUrlRetriever = pageUrlRetriever;
         }
 
         public ActionResult GetCalendarData(string widgetType)
@@ -33,14 +30,6 @@
                 {
                     case FullCalendarConfigurationType.Pages:
                         data = this.FullCalendarEventsRepository.GetPageTypeEvents(widgetConfiguration).ToList();
-
-                        if (pageUrlRetriever != null)
-                        {
-                            foreach (var d in data)
-                            {
-                                d.Url = pageUrlRetriever.Retrieve(d.Url).RelativePath.Replace("~", "");
-                            }
-                        }
                         break;
 
                     case FullCalendarConfigurationType.CustomTables:

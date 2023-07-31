@@ -5,6 +5,7 @@
     using CMS.DocumentEngine;
     using CMS.Helpers;
     using CMS.SiteProvider;
+    using global::Kentico.Content.Web.Mvc;
     using Kentico.Mvc.Widgets.FullCalendar;
     using Kentico.Mvc.Widgets.FullCalendar.Models.FullCalendar;
     using Kentico.Mvc.Widgets.FullCalendar.Models.Widgets.FullCalendarWidget;
@@ -14,12 +15,14 @@
 
     public class FullCalendarEventsRepository : IFullCalendarEventsRepository
     {
+        private readonly IPageUrlRetriever PageUrlRetriever;
         private readonly string CultureName;
         private readonly bool LatestVersionEnabled;
         private readonly string SiteName;
 
-        public FullCalendarEventsRepository(string cultureName, bool latestVersionEnabled)
+        public FullCalendarEventsRepository(IPageUrlRetriever pageUrlRetriever, string cultureName, bool latestVersionEnabled)
         {
+            PageUrlRetriever = pageUrlRetriever;
             CultureName = cultureName;
             LatestVersionEnabled = latestVersionEnabled;
             SiteName = SiteContext.CurrentSiteName;
@@ -29,7 +32,7 @@
         {
             Func<IEnumerable<FullCalendarEvent>> moduleClassesLoadMethod = () => new ObjectQuery(fullCalendarWidgetConfiguration.ClassOrObjectName)
                                       .Columns(fullCalendarWidgetConfiguration.Columns)
-                                      .Select(item => item.ToFullCalendarEvent(fullCalendarWidgetConfiguration));
+                                      .Select(item => item.ToFullCalendarEvent(fullCalendarWidgetConfiguration, this.PageUrlRetriever));
 
             CacheSettings cacheSettings = new CacheSettings(10, "exlrt|data|eventmoduleclasses", SiteName, CultureName)
             {
@@ -47,7 +50,7 @@
         {
             Func<IEnumerable<FullCalendarEvent>> customTablesLoadMethod = () => CustomTableItemProvider.GetItems(fullCalendarWidgetConfiguration.ClassOrObjectName)
                                       .Columns(fullCalendarWidgetConfiguration.Columns)
-                                      .Select(item => item.ToFullCalendarEvent(fullCalendarWidgetConfiguration));
+                                      .Select(item => item.ToFullCalendarEvent(fullCalendarWidgetConfiguration, this.PageUrlRetriever));
 
             CacheSettings cacheSettings = new CacheSettings(10, "exlrt|data|eventcustomtables", SiteName, CultureName)
             {
@@ -63,8 +66,9 @@
 
         public IEnumerable<FullCalendarEvent> GetPageTypeEvents(FullCalendarWidgetConfiguration fullCalendarWidgetConfiguration)
         {
-            List<string> columns = new List<string>() { nameof(TreeNode.DocumentCulture) };
+            List<string> columns = new List<string>() { nameof(TreeNode.DocumentCulture), nameof(TreeNode.NodeAliasPath) };
             columns.AddRange(fullCalendarWidgetConfiguration.Columns);
+            columns = columns.Distinct().ToList();
 
             Func<IEnumerable<FullCalendarEvent>> pagesLoadMethod = () => DocumentHelper.GetDocuments()
                                       .Type(fullCalendarWidgetConfiguration.ClassOrObjectName)
@@ -74,7 +78,7 @@
                                       .Culture(CultureName)
                                       .Columns(columns)
                                       .TypedResult
-                                      .Select(node => node.ToFullCalendarEvent(fullCalendarWidgetConfiguration));
+                                      .Select(node => node.ToFullCalendarEvent(fullCalendarWidgetConfiguration, this.PageUrlRetriever));
 
             CacheSettings cacheSettings = new CacheSettings(10, "exlrt|data|eventpages", SiteName, CultureName)
             {
