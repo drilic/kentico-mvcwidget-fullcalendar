@@ -239,3 +239,5 @@ _Pvt_Extensions
 # nCrunch files
 *.ncrunchsolution
 *.ncrunchproject
+
+EXLRT.Kentico.Mvc.Widgets.FullCalendar/Kentico/

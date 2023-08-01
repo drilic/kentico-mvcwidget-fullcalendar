@@ -4,24 +4,24 @@
 Full calendar allows you to render various content as calendar events.
 
 ## Requirements
-* **Kentico 12.0.41** or later version is required to use this component.
+* **Kentico 12.0.41** or newer version for legacy Kentico 12 ([EXLRT.Kentico.Mvc.Widgets.FullCalendar.1.0.0.nupkg](https://github.com/drilic/kentico-mvcwidget-fullcalendar/blob/master/nuget-versions/EXLRT.Kentico.Mvc.Widgets.FullCalendar.1.0.0.nupkg))
+* **Kentico 13.0.97** or newer version is required to use this component for latest version ([EXLRT.Kentico.Mvc.Widgets.FullCalendar.2.0.0.nupkg](https://github.com/drilic/kentico-mvcwidget-fullcalendar/blob/master/nuget-versions/EXLRT.Kentico.Mvc.Widgets.FullCalendar.2.0.0.nupkg))
 * **Autofac 3.5.2** for resolving dependency injection
 
-## Download & instalation
+## Download & Installation
 1. Download and install widget:
     * Install widget through nuget package
-        * Download nuget package from this [link](https://github.com/drilic/kentico-mvcwidget-fullcalendar/blob/master/EXLRT.Kentico.Mvc.Widgets.FullCalendar/EXLRT.Kentico.Mvc.Widgets.FullCalendar.1.0.0.nupkg)
-        * Setup local nugetfeed and copy nuget package **EXLRT.Kentico.Mvc.Widgets.FullCalendar.1.0.0.nupkg** to newly created feed.
+        * (need updated package) Download nuget package from this [link](https://github.com/drilic/kentico-mvcwidget-fullcalendar/blob/master/EXLRT.Kentico.Mvc.Widgets.FullCalendar/EXLRT.Kentico.Mvc.Widgets.FullCalendar.2.0.0.nupkg)
+        * Setup local nugetfeed and copy nuget package **EXLRT.Kentico.Mvc.Widgets.FullCalendar.2.0.0.nupkg** to newly created feed.
         * Install package to your MVC solution
     * Install widget by source code
         * Clone this repostiory to your file system: https://github.com/drilic/kentico-mvcwidget-fullcalendar
-        * Link **EXLRT.Kentico.Mvc.Widgets.FullCalendar.csproj** as existing project
-        * Copy files to exact same structure in MVC project:
+        * Reference **EXLRT.Kentico.Mvc.Widgets.FullCalendar.csproj** in your existing project
+        * Copy following files to exact same file structure in MVC project:
             * Views\Shared\Widgets\FullCalendarWidget\\_FullCalendarWidget.cshtml
             * Views\Shared\FormComponents\FullCalendarTypeSelector\\_FormComponents.FullCalendarTypeSelector.cshtml
             * Content\Widgets\FullCalendar\css\fullCalendar.css
             * Content\Widgets\FullCalendar\js\fullCalendar.js
-        * Add project as reference to the MVC project
         * Build solution
 4. [Configure routing for widget](#configure-routing)
 5. [Register dependency injection](#register-dependency-injection)
@@ -48,10 +48,11 @@ Method definition:
 ```csharp
 void RegisterFullCalendarDependencies(this ContainerBuilder builder);
 ```
-Example of configuration for DancingGoat site (DependencyResolverConfig.cs):
+Example of configuration for DancingGoat site (AutoFacConfig.cs):
 ```csharp
 using EXLRT.Kentico.Mvc.Widgets.FullCalendar;
 ...
+// add to end of your ConfigureDependencyResolver(ContainerBuilder builder) method
 builder.RegisterFullCalendarDependencies();
 ```
 
@@ -64,7 +65,15 @@ Example of configuration for DancingGoat site (ApplicationConfig.cs):
 ```csharp
 using EXLRT.Kentico.Mvc.Widgets.FullCalendar;
 ...
+// If you are using content tree based routing, leave the Pattern and Columns set to NodeAliasPath as shown below, the IPageUrlRetriever will resolve the URLs based on the NodeAliasPath
 FullCalendarConfiguration.InitializeFullCalendarForMultiCultureSites()
+                    .AddConfiguration("articlesWithRetriever", FullCalendarConfigurationType.Pages, "DancingGoatMvc.Article",
+                                      "Articles (Pages - Retriever)", "DocumentName", "DocumentPublishFrom", "DocumentPublishTo", new UrlConfiguration()
+                                      {
+                                          // can't be used in combination with 'pattern' feature
+                                          UseDefaultKenticoRetriever = true
+                                      })
+                    
                     .AddConfiguration("articles", FullCalendarConfigurationType.Pages, "DancingGoatMvc.Article",
                                       "Articles (Pages)", "DocumentName", "DocumentPublishFrom", "DocumentPublishTo", new UrlConfiguration()
                                       {
@@ -99,3 +108,6 @@ Example of configuration for DancingGoat site (_Layout.cshtml):
 
 ## Contributions and Support
 Feel free to fork and submit pull requests or report issues to contribute. Either this way or another one, we will look into them as soon as possible. 
+
+Thanks:
+* [bkehren](https://github.com/bkehren/kentico-mvcwidget-fullcalendar) for forking and updating the code base to Kentico 13, .NET 4.8.

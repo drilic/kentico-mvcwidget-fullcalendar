@@ -1,7 +1,9 @@
 ﻿namespace EXLRT.Kentico.Mvc.Widgets.FullCalendar
 {
+    using CMS.Core;
     using CMS.DataEngine;
-    using CMS.EventLog;
+    using CMS.DocumentEngine;
+    using global::Kentico.Content.Web.Mvc;
     using Kentico.Mvc.Widgets.FullCalendar.Models.FullCalendar;
     using Kentico.Mvc.Widgets.FullCalendar.Models.Widgets.FullCalendarWidget;
     using System;
@@ -12,9 +14,11 @@
     {
         private const string LogEventCodeName = "Full Calendar";
         private const string RequiredFieldsMissingMessage = "Required fields in full calendar widget configuration can't be null";
+        private const string InvalidURLConfiguratioNMessage = "Invalid URL Configuration. Default Kentico Retriver can't be used in combination with custom patterns.";
         private const string WidgetAlreadyExistsMessage = "Widget type already registerd. Key must be unique for all sites.";
         private const string MissingConfigurationMessage = "Missing widget configuration";
         internal static bool IsMultiCultureSite = false;
+        private static IEventLogService eventLogService = Service.Resolve<IEventLogService>();
 
         private static Dictionary<string, FullCalendarWidgetConfiguration> WidgetConfiguration { get; set; }
 
@@ -43,7 +47,7 @@
             }
             else
             {
-                EventLogProvider.LogEvent(EventType.INFORMATION, nameof(FullCalendarConfiguration), LogEventCodeName, eventDescription: WidgetAlreadyExistsMessage);
+                eventLogService.LogInformation(nameof(FullCalendarConfiguration), LogEventCodeName, eventDescription: WidgetAlreadyExistsMessage);
             }
 
             return WidgetConfiguration;
@@ -72,11 +76,16 @@
                     throw new Exception(RequiredFieldsMissingMessage);
                 }
 
+                if (!widgetTypeConfiguration.IsURLConfigurationValid())
+                {
+                    throw new Exception(InvalidURLConfiguratioNMessage);
+                }
+
                 WidgetConfiguration.Add(widgetType, widgetTypeConfiguration);
             }
             else
             {
-                EventLogProvider.LogEvent(EventType.INFORMATION, nameof(FullCalendarConfiguration), LogEventCodeName, eventDescription: WidgetAlreadyExistsMessage);
+                eventLogService.LogInformation(nameof(FullCalendarConfiguration), LogEventCodeName, eventDescription: WidgetAlreadyExistsMessage);
             }
 
             return WidgetConfiguration;
@@ -86,7 +95,7 @@
         {
             if (WidgetConfiguration == null || !WidgetConfiguration.ContainsKey(widgetType))
             {
-                EventLogProvider.LogEvent(EventType.ERROR, nameof(FullCalendarConfiguration), "Full Calendar", eventDescription: "Missing widget configuration");
+                eventLogService.LogError(nameof(FullCalendarConfiguration), "Full Calendar", eventDescription: "Missing widget configuration");
                 return null;
             }
 
@@ -97,7 +106,7 @@
         {
             if (WidgetConfiguration == null)
             {
-                EventLogProvider.LogEvent(EventType.ERROR, nameof(FullCalendarConfiguration), LogEventCodeName, eventDescription: MissingConfigurationMessage);
+                eventLogService.LogError(nameof(FullCalendarConfiguration), LogEventCodeName, eventDescription: MissingConfigurationMessage);
                 return null;
             }
 
@@ -110,9 +119,22 @@
             return !requiredColumnsValue.Any(columnValue => String.IsNullOrEmpty(columnValue));
         }
 
+        private static bool IsURLConfigurationValid(this FullCalendarWidgetConfiguration configuration)
+        {
+            if (configuration.Url.UseDefaultKenticoRetriever)
+            {
+                if (configuration.Url.Columns?.Any() ?? false || string.IsNullOrEmpty(configuration.Url.Pattern))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         #region "Full Calendar Mapper"
 
-        public static FullCalendarEvent ToFullCalendarEvent(this BaseInfo item, FullCalendarWidgetConfiguration configuration)
+        public static FullCalendarEvent ToFullCalendarEvent(this BaseInfo item, FullCalendarWidgetConfiguration configuration, IPageUrlRetriever pageUrlRetriever)
         {
             FullCalendarEvent fullCalendarEvent = new FullCalendarEvent()
             {
@@ -127,13 +149,23 @@
 
             if (configuration.Url != null)
             {
-                string url = configuration.Url.Pattern;
-                foreach (string columnName in configuration.Url.Columns)
+                if (configuration.Url.UseDefaultKenticoRetriever)
                 {
-                    url = url.Replace($"#{columnName}#", item.GetStringValue(columnName, string.Empty));
+                    if (pageUrlRetriever != null)
+                    {
+                        fullCalendarEvent.Url = pageUrlRetriever.Retrieve(item.GetStringValue(nameof(TreeNode.NodeAliasPath), string.Empty)).RelativePath?.Replace("~", string.Empty);
+                    }
                 }
+                else
+                {
+                    string url = configuration.Url.Pattern;
+                    foreach (string columnName in configuration.Url.Columns)
+                    {
+                        url = url.Replace($"#{columnName}#", item.GetStringValue(columnName, string.Empty));
+                    }
 
-                fullCalendarEvent.Url = url;
+                    fullCalendarEvent.Url = url;
+                }
             }
 
             if (!String.IsNullOrEmpty(configuration.DescriptionColumnName))

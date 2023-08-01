@@ -7,6 +7,7 @@
     using Newtonsoft.Json;
     using Newtonsoft.Json.Serialization;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Web.Mvc;
 
     public class FullCalendarApiController : Controller
@@ -20,7 +21,7 @@
 
         public ActionResult GetCalendarData(string widgetType)
         {
-            IEnumerable<FullCalendarEvent> data = new List<FullCalendarEvent>();
+            List<FullCalendarEvent> data = new List<FullCalendarEvent>();
             FullCalendarWidgetConfiguration widgetConfiguration = FullCalendarConfiguration.GetWidgetConfiguration(widgetType);
 
             if (widgetConfiguration != null)
@@ -28,15 +29,15 @@
                 switch (widgetConfiguration.ConfigurationType)
                 {
                     case FullCalendarConfigurationType.Pages:
-                        data = this.FullCalendarEventsRepository.GetPageTypeEvents(widgetConfiguration);
+                        data = this.FullCalendarEventsRepository.GetPageTypeEvents(widgetConfiguration).ToList();
                         break;
 
                     case FullCalendarConfigurationType.CustomTables:
-                        data = this.FullCalendarEventsRepository.GetCustomTableEvents(widgetConfiguration);
+                        data = this.FullCalendarEventsRepository.GetCustomTableEvents(widgetConfiguration).ToList();
                         break;
 
                     case FullCalendarConfigurationType.Classes:
-                        data = this.FullCalendarEventsRepository.GetModuleClassEvents(widgetConfiguration);
+                        data = this.FullCalendarEventsRepository.GetModuleClassEvents(widgetConfiguration).ToList();
                         break;
                 }
             }
