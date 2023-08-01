@@ -1,7 +1,6 @@
 ﻿namespace EXLRT.Kentico.Mvc.Widgets.FullCalendar
 {
     using Autofac;
-    using global::Kentico.Content.Web.Mvc;
     using global::Kentico.PageBuilder.Web.Mvc;
     using global::Kentico.Web.Mvc;
     using Kentico.Mvc.Widgets.FullCalendar.Controllers;
@@ -20,7 +19,7 @@
                 .WithParameter((parameter, context) => parameter.Name == "latestVersionEnabled", (parameter, context) => HttpContext.Current.Kentico().PageBuilder().EditMode)
                 .InstancePerRequest();
 
-            builder.Register(context => new FullCalendarApiController(context.Resolve<IPageUrlRetriever>(), context.Resolve<IFullCalendarEventsRepository>())).InstancePerRequest();
+            builder.Register(context => new FullCalendarApiController(context.Resolve<IFullCalendarEventsRepository>())).InstancePerRequest();
         }
     }
 }
